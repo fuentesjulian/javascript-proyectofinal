@@ -1,0 +1,63 @@
+section{
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+header{
+    text-align: center;
+}
+
+#articulos {
+    display: flex;
+    flex-wrap: wrap;
+}
+section{
+    margin: 1em;
+}
+.card{
+    width: 18em;
+    margin: 1em;
+
+}
+
+.card .imagen{
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.card .imagen img{
+    max-height: 200px;
+}
+
+.card .titulo{
+    padding-top: 0.5em;
+    text-align: center;
+}
+
+.card .precio{
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.card .card-text{
+    line-height: 1em;
+}
+
+footer{
+    margin: 1em;
+    text-align: center;
+}
+
+.navbar{
+    background-color: black;
+}
+
+.navbar a{
+    color:rgba(255, 255, 255, 0.9) ;
+}
+
+
+.navbar a:hover{
+    color:rgba(255, 255, 255) ;
+}
