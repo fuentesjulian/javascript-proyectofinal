@@ -7,12 +7,12 @@ Campos como generación del procesador, velocidad, etc que quizás no hacen a la
 */
 let masterData = [];
 
-masterData[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 3, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.PNG" };
-masterData[1] = { id: "PR7", nombre: "Procesador Ryzen 7", precio: 65000, stock: 2, descripcion: "Procesador Ryzen 7 5800x", imagen: "ryzen7.PNG" };
-masterData[2] = { id: "PI5", nombre: "Procesador Intel I5", precio: 37000, stock: 4, descripcion: "Procesador Intel i5 10ma generacion", imagen: "i5.PNG" };
-masterData[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 37000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.PNG" };
-masterData[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.PNG" };
-masterData[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.PNG" };
+masterData[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 3, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
+masterData[1] = { id: "PR7", nombre: "Procesador Ryzen 7", precio: 65000, stock: 2, descripcion: "Procesador Ryzen 7 5800x", imagen: "ryzen7.png" };
+masterData[2] = { id: "PI5", nombre: "Procesador Intel I5", precio: 37000, stock: 4, descripcion: "Procesador Intel i5 10ma generacion", imagen: "i5.png" };
+masterData[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 37000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.png" };
+masterData[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.png" };
+masterData[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.png" };
 
 /*
 Creo una clase que se llama producto.
