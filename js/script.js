@@ -222,6 +222,9 @@ function limpiarCarrito() {
     /* vuelvo el boton agregar a su visualizacion original */
     document.getElementById(`agregar-${producto.id}`).innerText = "Agregar";
     document.getElementById(`agregar-${producto.id}`).className = "btn btn-success";
+    if(producto.stock===0){
+      document.getElementById(`agregar-${producto.id}`).disabled = true;
+    }
     /* cambio para que solo aparezca el stock en la linea de stock (antes estaba la cantidad ordeanda tambien)*/
     document.getElementById(`stock-${producto.id}`).innerText = `Stock: ${producto.stock}`;
     /* oculto el boton para eliminar del carrito */
