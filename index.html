@@ -14,25 +14,27 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <header><img src="img/fondo.PNG" alt=""></header>
+    <header><img src="img/fondo.PNG" alt="" /></header>
     <nav class="navbar sticky-top navbar-expand-lg">
       <div class="container-fluid">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
+            <button id="btnLimpiarCarrito" class="btn btn-danger" disabled type="button">Limpiar Carrito</button>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Productos</a>
+            <button id="btnVerCarrito" class="btn btn-primary" disabled type="button">Ver Carrito</button>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Contacto</a>
+            <button id="btnFacturar" class="btn btn-success" disabled type="button">Facturar</button>
           </li>
         </ul>
-        <span class="navbar-text">Carrito Vacio</span>
+        <span class="navbar-text">
+          <div id="cuentaCarrito">Carrito Vacio</div>
+        </span>
       </div>
     </nav>
 
-    <section id="menu"><button class="btn btn-success" type="button" onclick="tiendaOnline();">Abrir tienda!</button></section>
+
     <section id="articulos"></section>
     <footer>Loopa SA - Todos los derechos reservados.</footer>
     <script
