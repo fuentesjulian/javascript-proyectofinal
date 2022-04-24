@@ -1,103 +1,50 @@
-/* 
-para simplificar el código puse sólo un array de productos sin la master data
-*/
+/* para simplificar el código puse sólo un array de productos sin la master data */
 let productos = [];
-productos[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 3, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
+productos[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 5, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
 productos[1] = { id: "PR7", nombre: "Procesador Ryzen 7", precio: 65000, stock: 2, descripcion: "Procesador Ryzen 7 5800x", imagen: "ryzen7.png" };
 productos[2] = { id: "PI5", nombre: "Procesador Intel I5", precio: 37000, stock: 4, descripcion: "Procesador Intel i5 10ma generacion", imagen: "i5.png" };
-productos[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 37000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.png" };
+productos[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 67000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.png" };
 productos[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.png" };
 productos[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.png" };
 
 /* es un numero de factura que va subiendo a medida que voy facturando */
 let numeroFact = 0;
 
-/* seta función sirve para cargar los productos al HTML */
+/* esta función sirve para cargar los productos al HTML */
 function cargarProductos() {
-  /* 
-  limpio el HTML (en la primer carga no es necesario, pero si voy facturando necesito actualizar todo) 
-  seguramente haya una oportunidad de optimizar esto, no hacer un reload cada vez que facturo 
-  y cambiar solo las cantidades
-  actualización: le cambie el codigo para hacerlo todo por JS (antes lo hice con innerHTML)
-  fue medio complicado porque hay divs anidados
-  */
+  const articulos = document.getElementById("articulos");
+  /* volvi a la version anterior de carga, es mas corto el codigo */
   articulos.innerHTML = "";
   productos.forEach((producto) => {
     /* agrego cada producto al articulo dentro del body en el html */
     const plantilla = document.createElement("div");
     plantilla.className = "card";
-    /* titulo */
-    const prodTitulo = document.createElement("h5");
-    prodTitulo.className = "titulo";
-    prodTitulo.textContent = producto.nombre;
-    /* imagen */
-    const prodImagen = document.createElement("div");
-    prodImagen.className = "imagen";
-    const imgElement = document.createElement("img");
-    imgElement.className = "card-img-top";
-    imgElement.src = `img/${producto.imagen}`;
-    prodImagen.appendChild(imgElement);
-    /* body de la tarjeta: va a tener el precio, descrpcion, id, stock y boton de compra*/
-    const prodBody = document.createElement("div");
-    prodBody.className = "card-body";
-    /* precio */
-    const prodPrecio = document.createElement("p");
-    prodPrecio.className = "precio";
-    /* le doy formato como numero local (separador de miles) */
-    prodPrecio.textContent = `ARS ${producto.precio.toLocaleString()}`;
-    /* descripcion */
-    const prodDescripcion = document.createElement("p");
-    prodDescripcion.className = "card-text descripcion";
-    prodDescripcion.textContent = producto.descripcion;
-    /* ID Del item */
-    const prodItemId = document.createElement("p");
-    prodItemId.className = "card-text";
-    prodItemId.textContent = `ID: ${producto.id}`;
-    /* stock */
-    const prodStock = document.createElement("p");
-    prodStock.className = "card-text";
-    prodStock.id = `stock-${producto.id}`;
-    prodStock.textContent = `Stock: ${producto.stock}`;
-    /* boton de compra */
-    const prodBotonAgregar = document.createElement("button");
-    prodBotonAgregar.className = "btn btn-success";
-    prodBotonAgregar.id = `agregar-${producto.id}`;
-    prodBotonAgregar.textContent = "Agregar";
+    plantilla.innerHTML = `
+      <h5 class="titulo">${producto.nombre}</h5>
+      <div class="imagen"><img src="img/${producto.imagen}" class="card-img-top" alt="..."></div>
+      <div class="card-body">
+        <p class="precio">$ ${producto.precio.toLocaleString()}</p>
+        <p class="card-text descripcion">${producto.descripcion}</p>
+        <p class="card-text">ID: ${producto.id}</p>
+        <p class="card-text" id="stock-${producto.id}">Stock: ${producto.stock}</p>
+        <button class="btn btn-dark" id="agregar-${producto.id}">Agregar</button>
+      </div>`;
+    articulos.appendChild(plantilla);
+    /* cuando hago click corro la instrucion agregarProducto */
+    const prodBotonAgregar = document.getElementById(`agregar-${producto.id}`);
+    if (producto.stock === 0) {
+      prodBotonAgregar.disabled = true;
+    }
     prodBotonAgregar.onclick = () => {
       agregarProducto(producto.id);
     };
-
-    /* creo este boton para eliminar del carrito oculto */
-    const prodBotonEliminar = document.createElement("button");
-    prodBotonEliminar.className = "btn btn-danger";
-    prodBotonEliminar.id = `eliminar-${producto.id}`;
-    prodBotonEliminar.textContent = "Eliminar";
-    prodBotonEliminar.onclick = () => {
-      eliminarProducto(producto.id);
-    };
-    prodBotonEliminar.style.display = "none";
-
-    /* agrego el precio, descripcion, id, stock y boton al body */
-    prodBody.appendChild(prodPrecio);
-    prodBody.appendChild(prodDescripcion);
-    prodBody.appendChild(prodItemId);
-    prodBody.appendChild(prodStock);
-    prodBody.appendChild(prodBotonAgregar);
-    prodBody.appendChild(prodBotonEliminar);
-    /* la plantilla tiene titulo, imagen y body */
-    plantilla.appendChild(prodTitulo);
-    plantilla.appendChild(prodImagen);
-    plantilla.appendChild(prodBody);
-    /* agrego la plantilla al html */
-    articulos.appendChild(plantilla);
   });
 }
 
-/* 
-Cree esta clase para armar un item de un carrito
+/* Cree esta clase para armar un item de un carrito
 Además de tener el producto, tiene la cantidad ordenada y el subtotal
-*/
-class itemCarrito {
+Corrijo el nombre de la clase, en mayuscula */
+class ItemCarrito {
   constructor(producto, cantidad) {
     this.id = producto.id;
     this.nombre = producto.nombre;
@@ -107,16 +54,35 @@ class itemCarrito {
   }
 }
 
-/* Creo una clase que se llama carrito, cada uno de mis items es un itemCarrito */
+/* Creo una clase que se llama carrito, cada uno de mis items es un ItemCarrito */
 class Carrito {
   constructor() {
     this.items = [];
   }
 
+  /* esta funcion agrega 1 unidad al carrito */
+  agregar(idProducto) {
+    /* asumo que es nuevo y recorro todo el array */
+    let nuevo = true;
+    this.items.forEach((item) => {
+      /* si no es nuevo agrego 1 unidad */
+      if (item.id === idProducto) {
+        nuevo = false;
+        item.cantidad++;
+        item.subTotal = item.cantidad * item.precio;
+      }
+    });
+    /*si es un producto nuevo agrega el item */
+    if (nuevo) {
+      const producto = productos.find((producto) => producto.id === idProducto);
+      let miItem = new ItemCarrito(producto, 1);
+      this.items.push(miItem);
+    }
+  }
   /* 
-  cambie la funcionalidad de agregar producto, basicamente ahora lo hace por id de producto
+  antes este metodo se llamaba agregar, lo cambie a setearCantidad, es mas representativo de lo q hace
   */
-  agregar(idProducto, cantidad) {
+  setearCantidad(idProducto, cantidad) {
     /* asumo que es nuevo y recorro todo el array */
     let nuevo = true;
     this.items.forEach((item) => {
@@ -129,7 +95,7 @@ class Carrito {
     /*si es un producto nuevo agrega el item */
     if (nuevo) {
       const producto = productos.find((producto) => producto.id === idProducto);
-      let miItem = new itemCarrito(producto, cantidad);
+      let miItem = new ItemCarrito(producto, cantidad);
       this.items.push(miItem);
     }
   }
@@ -143,8 +109,8 @@ class Carrito {
     return total;
   }
 
-  /* sumo el total de items que hay en el carrito */
-  cantidad() {
+  /* devuelvo el total de items que hay en el carrito */
+  cantidadTotal() {
     let cuenta = 0;
     this.items.forEach((item) => {
       cuenta += item.cantidad;
@@ -152,6 +118,17 @@ class Carrito {
     return cuenta;
   }
 
+  /* devuelvo la cantidad de un item que hay en el carrito */
+  cantidadItem(idProducto) {
+    const item = this.items.find((item) => item.id === idProducto);
+    return item.cantidad;
+  }
+
+  /* devuelvo el subtotal de un item que hay en el carrito */
+  subtotalItem(idProducto) {
+    const item = this.items.find((item) => item.id === idProducto);
+    return item.subTotal;
+  }
   /* 
   cambie la funcionalidad de eliminar producto, toma como input el id
   */
@@ -163,39 +140,13 @@ class Carrito {
   limpiar() {
     this.items = [];
   }
-}
 
-function emitirFactura() {
-  /* borre el condicional de si cantidad de items mayor qu ecero */
-  /* escribirItemsCarrito es una funcion que me convierte la info del carrito a string */
-  let itemsCarrito = escribirItemsCarrito(miCarrito);
-  /* cargo el total, calculo iva y sumo */
-  const totalSinIVA = miCarrito.total();
-  const IVA = totalSinIVA * 0.21;
-  const totalConIVA = totalSinIVA + IVA;
-  /* aumento el numero de la factura */
-  numeroFact++;
-  /* concateno todo en un solo string */
-  alert(`Factura ${numeroFact} \n${itemsCarrito} \nTotal sin IVA: ${totalSinIVA} \nIVA: ${IVA} \nTotal con IVA ${totalConIVA}`);
-  /* ajusto el stock para que lo facturado no aparezca */
-  ajustarStocks();
-  /* limpio el carrito */
-  limpiarCarrito();
-  /* deshabilito botones */
-  switchBotones();
-  /* borre el else; el boton de facturar queda deshabilitado si no hay items */
-}
-
-function mostrarCarrito() {
-  /* borre el condicional de si cantidad de items mayor qu ecero */
-  /* escribirItemsCarrito es una funcion que me convierte la info del carrito a string */
-  let itemsCarrito = escribirItemsCarrito(miCarrito);
-  /* cargo el total, calculo iva y sumo */
-  const totalSinIVA = miCarrito.total();
-  const IVA = totalSinIVA * 0.21;
-  const totalConIVA = totalSinIVA + IVA;
-  /* concateno todo en un solo string */
-  alert(`Carrito: \n${itemsCarrito} \nTotal sin IVA: ${totalSinIVA} \nIVA: ${IVA} \nTotal con IVA ${totalConIVA}`);
+  /* instruccion para cargar lo que esta en local storage */
+  cargar(itemsCarrito) {
+    if (itemsCarrito != null && itemsCarrito.length > 0) {
+      this.items = itemsCarrito;
+    }
+  }
 }
 
 /* cuando vendo el producto tengo que ajustar stock
@@ -210,177 +161,236 @@ function ajustarStocks() {
   });
 }
 
-/* limpiar el carrito no es sólo limpiar el array items dentro de carrito,
- */
+const btnLimpiarCarrito = document.getElementById("btnLimpiarCarrito");
+btnLimpiarCarrito.onclick = () => {
+  limpiarCarrito();
+};
+
+const btnCheckout = document.getElementById("btnCheckout");
+btnCheckout.onclick = () => {
+  checkout();
+};
+
+function checkout() {
+  /* todavia no arme esta pagina, pero la idea es que tome los datos del local storage para generar el checkout */
+  window.location.href = "checkout.html";
+}
+
+/* limpiar el carrito no es sólo limpiar el array items dentro de carrito, tambien actualiza el modal  */
 function limpiarCarrito() {
   /* limpio la variable carrito */
   miCarrito.limpiar();
+  /* actualizo los items en el carrito */
+  escribirItemsCarrito(miCarrito);
   /* actualizo la cantidad de items en carrito */
-  actualizarItemsCarrito();
+  actualizarContadorCarrito();
   /* limpio todo el html */
   productos.forEach((producto) => {
     /* vuelvo el boton agregar a su visualizacion original */
-    document.getElementById(`agregar-${producto.id}`).innerText = "Agregar";
-    document.getElementById(`agregar-${producto.id}`).className = "btn btn-success";
-    if(producto.stock===0){
+    document.getElementById(`agregar-${producto.id}`).disabled = false;
+    if (producto.stock === 0) {
       document.getElementById(`agregar-${producto.id}`).disabled = true;
     }
     /* cambio para que solo aparezca el stock en la linea de stock (antes estaba la cantidad ordeanda tambien)*/
     document.getElementById(`stock-${producto.id}`).innerText = `Stock: ${producto.stock}`;
-    /* oculto el boton para eliminar del carrito */
-    document.getElementById(`eliminar-${producto.id}`).style.display = "none";
   });
+  /* actualizo el local storage */
+  actualizarLocalStorage();
 }
 
 function escribirItemsCarrito(carrito) {
+  const itemsCarrito = document.getElementById("itemsCarrito");
+  /* limpio el html */
+  itemsCarrito.innerHTML = "";
   /* primero checkeo si el carrito esta vacio */
-  if (carrito.cantidad() > 0) {
-    /* si no esta vacio corro una funcion que desglose el array y lo pase a un string */
-    return desglosar(carrito.items, carrito.cantidad() + ` Items en Carrito:`);
+  if (carrito.cantidadTotal() > 0) {
+    btnLimpiarCarrito.disabled = false;
+    btnCheckout.disabled = false;
+
+    carrito.items.forEach((item) => {
+      /* voy a necesitar el producto para obtener la foto y el stock */
+      const producto = productos.find((producto) => producto.id === item.id);
+      const itemCarrito = document.createElement("li");
+      itemCarrito.className = "list-group-item";
+      /* uso el input numerico con un max que sea igual al stock */
+      itemCarrito.innerHTML = `<div class="imagen"><img src="img/${producto.imagen}" alt="" /></div>
+      <div class="texto">
+        <div class="nombre">${producto.nombre}</div>
+        <div class="stock">#SKU ${item.id} - stock ${producto.stock} unidades</div>
+        <div class="precio-unit">Precio unitario $ ${producto.precio.toLocaleString()}</div>
+      </div>
+      <div class="cantidad"><input type="number" name="number" id="cantidad-${item.id}" min="1" max="${producto.stock}" step="1" value="${item.cantidad}" /></div>
+      <div class="precio" id="subTotal-${item.id}">$ ${item.subTotal.toLocaleString()}</div>
+      <div class="eliminar" id="eliminar-${item.id}"><i class="bi bi-trash"></i></div>`;
+      itemsCarrito.appendChild(itemCarrito);
+      const inputCantidad = document.getElementById(`cantidad-${item.id}`);
+      const subTotal = document.getElementById(`subTotal-${item.id}`);
+      inputCantidad.onchange = (e) => {
+        /* el input por más que sea numero se transforma en string, así que lo tengo que convertir a numero
+        para eso uso un parseint */
+        carrito.setearCantidad(item.id, parseInt(e.target.value));
+        subTotal.innerText = `$ ${carrito.subtotalItem(item.id).toLocaleString()}`;
+        /* si el stock es igual a lo que esta en carrito deshabilito el boton agregar de ese producto */
+        cantidadCarrito = carrito.cantidadItem(item.id);
+        /* cuando cambio la cantidad en el carrito, tmb cambia en la pagina inicial  */
+        document.getElementById(`stock-${producto.id}`).innerText = `Stock: ${producto.stock} - ${cantidadCarrito} en carrito`;
+        /* cuando igualo la cantidad ordenada a la cantidad en stock, boton de agregar de la pag ppal se deshabilita */
+        if (cantidadCarrito === producto.stock) {
+          document.getElementById(`agregar-${producto.id}`).disabled = true;
+        } else {
+          document.getElementById(`agregar-${producto.id}`).disabled = false;
+        }
+        /* actualizo la cantidad de items de carrito */
+        actualizarContadorCarrito();
+        /* actualizo el local storage */
+        actualizarLocalStorage();
+        /* actualizo el total */
+        actualizarTotal();
+      };
+      const btnEliminarItem = document.getElementById(`eliminar-${item.id}`);
+      btnEliminarItem.onclick = () => {
+        eliminarProducto(item.id);
+      };
+    });
+    /* ademas de esto tengo que agregar le subtotal */
+    const calculoTotal = document.createElement("li");
+    calculoTotal.className = "list-group-item";
+    /* uso el input numerico con un max que sea igual al stock */
+    calculoTotal.innerHTML = `
+      <div class="texto">
+        <div class="total">Total</div>
+      </div>
+      <div class="precio" id="total">$ ${miCarrito.total().toLocaleString()}</div>`;
+    itemsCarrito.appendChild(calculoTotal);
   } else {
-    return "Carrito vacio\n\n";
+    btnLimpiarCarrito.disabled = true;
+    btnCheckout.disabled = true;
+    itemsCarrito.innerHTML = "Carrito vacio";
   }
 }
 
-/* esto lo uso el profe para desglosar cada variable, lo mostró en clase y me encantó
-lo que le agregue de complejidad es que recorro el array item por item y le pongo un titulo al ppio de la string  */
-function desglosar(variable, titulo) {
-  let auxString = titulo;
-  variable.forEach((item) => {
-    auxString += `\n`;
-    /* esto es la versión 3.0 de lo que mostró el profe */
-    for (propiedad in item) {
-      auxString += `${propiedad}: ${item[propiedad]} - `;
-    }
-  });
-  return auxString;
-}
-
-/* 
-cuando pido la cantidad checkeo
-  si aprieta cancelar
-  si escribe un numero
-  si el nro es mayor que cero
-  si el nro supera la cantidad
-  o si quiere salir (con s)
-esto me gustaria dsps hacerlo yendo a otra pagina como me adelantaste
-*/
-function solicitarCantidad(producto) {
-  let seguirLoop = true;
-  let ingreso = prompt(`Escriba la cantidad que quiere ordenar: \n${producto.id} ${producto.nombre} - Stock ${producto.stock}\n(Ingrear 's' o el boton cancelar para Salir)`);
-  let cantidad = parseInt(ingreso);
-  while (seguirLoop) {
-    /* si aprieta el boton cancelar hago un return -1 para salir del prompt */
-    if (!ingreso) return -1;
-    /* si ingresa algo empiezo a hacer los checkeos */
-    if (ingreso.toLocaleLowerCase() === "s") {
-      return -1;
-    } else {
-      if (!cantidad) {
-        ingreso = prompt(`Debes ingresar un numero mayor que cero. Escriba la cantidad que quiere ordenar: \n${producto.id} ${producto.nombre} - Stock ${producto.stock}\n(s para Salir)`);
-        cantidad = parseInt(ingreso);
-      } else if (cantidad < 0) {
-        ingreso = prompt(`Debes ingresar un numero mayor que cero. Escriba la cantidad que quiere ordenar: \n${producto.id} ${producto.nombre} - Stock ${producto.stock}\n(s para Salir)`);
-        cantidad = parseInt(ingreso);
-      } else if (cantidad > producto.stock) {
-        ingreso = prompt(`La cantidad ordenada supera el stock. Escriba la cantidad que quiere ordenar: \n${producto.id} ${producto.nombre} - Stock ${producto.stock}\n(s para Salir)`);
-        cantidad = parseInt(ingreso);
-      } else {
-        seguirLoop = false;
-      }
-    }
+function actualizarTotal() {
+  if (miCarrito.cantidadTotal() > 0) {
+    const total = document.getElementById("total");
+    total.innerText = `$ ${miCarrito.total().toLocaleString()}`;
   }
-  return cantidad;
 }
 
+function actualizarLocalStorage() {
+  localStorage.setItem("carrito", JSON.stringify(miCarrito.items));
+}
+
+/* borre la funcion solicitad cantidad, la funcion agregarProducto ya no solicita cantidad, solo agrega 1 unidad */
 function agregarProducto(idProducto) {
   /* busco de que prodcuto se trata */
   const producto = productos.find((producto) => producto.id === idProducto);
-  /* solicito la cantidad */
-  const cantidad = solicitarCantidad(producto);
-  /* si elijo salir devuelvo -1 , asi que nomás ejecuto esta parte si devuelvo un nro mayor que cero */
-  if (cantidad > 0) {
-    /* cambio la cantidad en el carrito */
-    miCarrito.agregar(idProducto, cantidad);
-    /* actualizo los items en el carrito */
-    actualizarItemsCarrito();
-    /* cambio la visual del boton de agregar --> cambiar cantidad */
-    document.getElementById(`agregar-${idProducto}`).innerText = "Modificar";
-    document.getElementById(`agregar-${idProducto}`).className = "btn btn-primary";
-    /* donde aparece el stock pongo la cantidad ordenada */
-    document.getElementById(`stock-${idProducto}`).innerText = `Stock: ${producto.stock} - ${cantidad} en carrito`;
-    /* muestro el boton para eliminar del carrito */
-    document.getElementById(`eliminar-${idProducto}`).style.display = "inline-block";
-    /* corro la instruccion para habilitar / deshabilitar el boton de borrar carrito */
-    switchBotones();
+  /* ya no solicita la cantidad, directamente agrega 1 unidad */
+  miCarrito.agregar(idProducto);
+  /* actualizo los items en el carrito */
+  escribirItemsCarrito(miCarrito);
+  /* actualizo el contador */
+  actualizarContadorCarrito();
+  /* no cambia la vista borre esta linea */
+  /* muestro modal anunciando que agregue un producto */
+  mostrarModal("Producto agregado", `${producto.nombre} agregado a carrito`);
+  /* obtengo la cantidad del carrito */
+  const cantidadCarrito = miCarrito.cantidadItem(idProducto);
+  /* donde aparece el stock pongo la cantidad ordenada */
+  document.getElementById(`stock-${idProducto}`).innerText = `Stock: ${producto.stock} - ${cantidadCarrito} en carrito`;
+  /* checkeo si la cantidad agregada es igual al stock si es asi deshaiblita boton */
+  if (producto.stock === cantidadCarrito) {
+    document.getElementById(`agregar-${idProducto}`).disabled = true;
   }
+  /* actualizo el local storage */
+  actualizarLocalStorage();
 }
 
 function eliminarProducto(idProducto) {
   /* quito el item del carrito */
   miCarrito.eliminar(idProducto);
   /* actualizo los items en el carrito */
-  actualizarItemsCarrito();
-  /* vuelvo el boton agregar a su visualizacion original */
-  document.getElementById(`agregar-${idProducto}`).innerText = "Agregar";
-  document.getElementById(`agregar-${idProducto}`).className = "btn btn-success";
-  /* donde aparece el stock pongo la cantidad ordenada */
+  escribirItemsCarrito(miCarrito);
+  /* actualizo los items en el carrito */
+  actualizarContadorCarrito();
   /* busco el producto */
   const producto = productos.find((producto) => producto.id === idProducto);
+  /* vuelvo el boton agregar a su visualizacion original */
+  if (producto.stock > 0) {
+    document.getElementById(`agregar-${idProducto}`).disabled = false;
+  }
   /* cambio para que solo aparezca el stock en la linea de stock (antes estaba la cantidad ordeanda tambien)*/
   document.getElementById(`stock-${idProducto}`).innerText = `Stock: ${producto.stock}`;
-  /* oculto el boton para eliminar del carrito */
-  document.getElementById(`eliminar-${idProducto}`).style.display = "none";
-  /* corro la instruccion para habilitar / deshabilitar el boton de borrar carrito */
-  switchBotones();
+  /* actualizo el local storage */
+  actualizarLocalStorage();
 }
-
-function switchBotones() {
-  if (miCarrito.cantidad() > 0) {
-    btnLimpiarCarrito.disabled = false;
-    btnVerCarrito.disabled = false;
-    btnFacturar.disabled = false;
-  } else {
-    btnLimpiarCarrito.disabled = true;
-    btnVerCarrito.disabled = true;
-    btnFacturar.disabled = true;
-  }
-}
-
-function actualizarItemsCarrito() {
+/* borre la funcion de switchBotones */
+/* cambie el nombre de esta funcion para que sea mas representativo lo q hace */
+function actualizarContadorCarrito() {
   /* calculo la cantidad en el carrito */
-  const itemsCarrito = miCarrito.cantidad();
+  const itemsCarrito = miCarrito.cantidadTotal();
   /* cambio la cuenta de items en carrito */
   if (itemsCarrito > 0) {
-    cuentaCarrito.textContent = `${itemsCarrito} items en carrito`;
+    cuentaCarrito.innerHTML = `<i class="bi bi-cart-fill"></i> ${itemsCarrito} items en carrito`;
   } else {
-    cuentaCarrito.textContent = "Carrito vacio";
+    cuentaCarrito.innerHTML = `<i class="bi bi-cart"></i> Carrito vacio`;
   }
 }
 
 /* corro la funcion de actualizarHTML cuando carga el DOM */
 document.addEventListener("DOMContentLoaded", inicializar());
 let miCarrito = new Carrito();
-const btnLimpiarCarrito = document.getElementById("btnLimpiarCarrito");
-const btnVerCarrito = document.getElementById("btnVerCarrito");
-const btnFacturar = document.getElementById("btnFacturar");
+const carritoEnLocalStorage = JSON.parse(localStorage.getItem("carrito"));
+console.log(carritoEnLocalStorage);
+miCarrito.cargar(carritoEnLocalStorage);
+escribirItemsCarrito(miCarrito);
+actualizarContadorCarrito();
+actualizarVista();
 
-btnLimpiarCarrito.onclick = () => {
-  /* limpio carrito */
-  limpiarCarrito();
-  /* deshabilito botones */
-  switchBotones();
-};
-
-btnVerCarrito.onclick = () => {
-  mostrarCarrito();
-};
-
-btnFacturar.onclick = () => {
-  emitirFactura();
-};
+/* esta funcion se corre al inicio dsps de haber cargado miCarrito */
+function actualizarVista() {
+  miCarrito.items.forEach((item) => {
+    /* obtengo el producto del array productos para sacar el stock */
+    const producto = productos.find((producto) => producto.id === item.id);
+    document.getElementById(`stock-${item.id}`).innerText = `Stock: ${producto.stock} - ${item.cantidad} en carrito`;
+    if (item.cantidad === producto.stock) {
+      document.getElementById(`agregar-${item.id}`).disabled = true;
+    }
+  });
+}
 
 function inicializar() {
   /* cargo productos */
   cargarProductos();
+}
+
+/* INSTRUCCIONES PARA EL MODAL QUE MENSAJEA QUE SE AGREGO UN PRODUCTO */
+/* creo el innerHTML del modal que se va a mostrar cada vez que agrego producto a carrito */
+const divModal = document.getElementById("divModal");
+divModal.innerHTML = `<div class="modal fade" tabindex="-1" id="modalAgregar">
+<div class="modal-dialog modal-sm">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="tituloModal"></h5>
+    </div>
+    <div class="modal-body" id="textoModal"></div>
+  </div>
+</div>
+</div>`;
+/* tomo el id del modal para poder darle instrucciones para mostrar / ocultar */
+const modalAgregar = document.getElementById("modalAgregar");
+const tituloModal = document.getElementById("tituloModal");
+const textoModal = document.getElementById("textoModal");
+/* busque como hacer para ocultar el modal dsps de cierto tiempo, el timeout son milisegundos */
+/* el toggle lo saque de bootstrap directamente */
+const bsModalAgregar = new bootstrap.Modal(modalAgregar, {});
+modalAgregar.addEventListener("show.bs.modal", () => {
+  setTimeout(function () {
+    bsModalAgregar.toggle();
+  }, 1000);
+});
+/* puedo configurar el modal para que tome el nombre del producto que agrego */
+function mostrarModal(titulo, texto) {
+  tituloModal.innerText = titulo;
+  textoModal.innerText = texto;
+  bsModalAgregar.toggle();
 }
