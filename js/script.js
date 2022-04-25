@@ -226,9 +226,21 @@ function escribirItemsCarrito(carrito) {
       const inputCantidad = document.getElementById(`cantidad-${item.id}`);
       const subTotal = document.getElementById(`subTotal-${item.id}`);
       inputCantidad.onchange = (e) => {
+        /* agrego esta validacion para que no se ingresen cantidades menores que 1 o mayores que el stock  */
+        let cantidad = parseInt(e.target.value);
+        if (cantidad < 1) {
+          cantidad = 1;
+          mostrarModal("Error", "Cantidad minima: 1");
+        }
+        if (cantidad > producto.stock) {
+          cantidad = producto.stock;
+          mostrarModal("Error", `Cantidad máxima: ${producto.stock}`);
+        }
+        e.target.value = cantidad;
+
         /* el input por más que sea numero se transforma en string, así que lo tengo que convertir a numero
         para eso uso un parseint */
-        carrito.setearCantidad(item.id, parseInt(e.target.value));
+        carrito.setearCantidad(item.id, parseInt(cantidad));
         subTotal.innerText = `$ ${carrito.subtotalItem(item.id).toLocaleString()}`;
         /* si el stock es igual a lo que esta en carrito deshabilito el boton agregar de ese producto */
         cantidadCarrito = carrito.cantidadItem(item.id);
