@@ -7,6 +7,7 @@ productos[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 67000, stock:
 productos[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.png" };
 productos[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.png" };
 
+
 /* es un numero de factura que va subiendo a medida que voy facturando */
 let numeroFact = 0;
 
@@ -15,28 +16,29 @@ function cargarProductos() {
   const articulos = document.getElementById("articulos");
   /* volvi a la version anterior de carga, es mas corto el codigo */
   articulos.innerHTML = "";
-  productos.forEach((producto) => {
+  /* #OPTIMIZACION desestructuracion de parametros */
+  productos.forEach(({ id, nombre, precio, stock, descripcion, imagen }) => {
     /* agrego cada producto al articulo dentro del body en el html */
     const plantilla = document.createElement("div");
     plantilla.className = "card";
     plantilla.innerHTML = `
-      <h5 class="titulo">${producto.nombre}</h5>
-      <div class="imagen"><img src="img/${producto.imagen}" class="card-img-top" alt="..."></div>
+      <h5 class="titulo">${nombre}</h5>
+      <div class="imagen"><img src="img/${imagen}" class="card-img-top" alt="..."></div>
       <div class="card-body">
-        <p class="precio">$ ${producto.precio.toLocaleString()}</p>
-        <p class="card-text descripcion">${producto.descripcion}</p>
-        <p class="card-text">ID: ${producto.id}</p>
-        <p class="card-text" id="stock-${producto.id}">Stock: ${producto.stock}</p>
-        <button class="btn btn-dark" id="agregar-${producto.id}">Agregar</button>
+        <p class="precio">$ ${precio.toLocaleString()}</p>
+        <p class="card-text descripcion">${descripcion}</p>
+        <p class="card-text">ID: ${id}</p>
+        <p class="card-text" id="stock-${id}">Stock: ${stock}</p>
+        <button class="btn btn-dark" id="agregar-${id}">Agregar</button>
       </div>`;
     articulos.appendChild(plantilla);
     /* cuando hago click corro la instrucion agregarProducto */
-    const prodBotonAgregar = document.getElementById(`agregar-${producto.id}`);
-    if (producto.stock === 0) {
+    const prodBotonAgregar = document.getElementById(`agregar-${id}`);
+    if (stock === 0) {
       prodBotonAgregar.disabled = true;
     }
     prodBotonAgregar.onclick = () => {
-      agregarProducto(producto.id);
+      agregarProducto(id);
     };
   });
 }
@@ -53,6 +55,15 @@ class ItemCarrito {
     this.subTotal = producto.precio * cantidad;
   }
 }
+/* #OPTIMIZACION creo una funcion de orden superior para hacer cualquier suma de una propiedad de un array de objetos */
+/* utilizo rest para esto */
+function sumarCampo(campo){
+  return function (...array){
+    return array.reduce((acumulador, array) => acumulador + array[campo], 0);
+  }
+}
+/* #OPTIMIZACION creo una funcion para sumar subtotales */
+let sumarSubTotal = sumarCampo("subTotal")
 
 /* Creo una clase que se llama carrito, cada uno de mis items es un ItemCarrito */
 class Carrito {
@@ -102,11 +113,7 @@ class Carrito {
 
   /* Calcula el precio total del carrito sumando los subtotales */
   total() {
-    let total = 0;
-    this.items.forEach((item) => {
-      total += item.subTotal;
-    });
-    return total;
+    return sumarSubTotal(...this.items);
   }
 
   /* devuelvo el total de items que hay en el carrito */
@@ -143,7 +150,9 @@ class Carrito {
 
   /* instruccion para cargar lo que esta en local storage */
   cargar(itemsCarrito) {
-    if (itemsCarrito != null && itemsCarrito.length > 0) {
+    /* #OPTIMIZACION antes checkeaba que mi array no fuera nula y que la longitud sea mayor que cero
+    ahora conjugo ambos en un acceso condicional con ?.length >0  */
+    if (itemsCarrito?.length > 0) {
       this.items = itemsCarrito;
     }
   }
@@ -185,14 +194,15 @@ function limpiarCarrito() {
   /* actualizo la cantidad de items en carrito */
   actualizarContadorCarrito();
   /* limpio todo el html */
-  productos.forEach((producto) => {
+  /* #OPTIMIZACION, destructuro */
+  productos.forEach(({ id, stock }) => {
     /* vuelvo el boton agregar a su visualizacion original */
-    document.getElementById(`agregar-${producto.id}`).disabled = false;
-    if (producto.stock === 0) {
-      document.getElementById(`agregar-${producto.id}`).disabled = true;
+    document.getElementById(`agregar-${id}`).disabled = false;
+    if (stock === 0) {
+      document.getElementById(`agregar-${id}`).disabled = true;
     }
     /* cambio para que solo aparezca el stock en la linea de stock (antes estaba la cantidad ordeanda tambien)*/
-    document.getElementById(`stock-${producto.id}`).innerText = `Stock: ${producto.stock}`;
+    document.getElementById(`stock-${id}`).innerText = `Stock: ${stock}`;
   });
   /* actualizo el local storage */
   actualizarLocalStorage();
@@ -206,25 +216,25 @@ function escribirItemsCarrito(carrito) {
   if (carrito.cantidadTotal() > 0) {
     btnLimpiarCarrito.disabled = false;
     btnCheckout.disabled = false;
-
-    carrito.items.forEach((item) => {
+    /* #OPTIMIZACION con destructuracion */
+    carrito.items.forEach(({ id, subTotal, cantidad }) => {
       /* voy a necesitar el producto para obtener la foto y el stock */
-      const producto = productos.find((producto) => producto.id === item.id);
+      const producto = productos.find((producto) => producto.id === id);
       const itemCarrito = document.createElement("li");
       itemCarrito.className = "list-group-item";
       /* uso el input numerico con un max que sea igual al stock */
       itemCarrito.innerHTML = `<div class="imagen"><img src="img/${producto.imagen}" alt="" /></div>
       <div class="texto">
         <div class="nombre">${producto.nombre}</div>
-        <div class="stock">#SKU ${item.id} - stock ${producto.stock} unidades</div>
+        <div class="stock">#SKU ${id} - stock ${producto.stock} unidades</div>
         <div class="precio-unit">Precio unitario $ ${producto.precio.toLocaleString()}</div>
       </div>
-      <div class="cantidad"><input type="number" name="number" id="cantidad-${item.id}" min="1" max="${producto.stock}" step="1" value="${item.cantidad}" /></div>
-      <div class="precio" id="subTotal-${item.id}">$ ${item.subTotal.toLocaleString()}</div>
-      <div class="eliminar" id="eliminar-${item.id}"><i class="bi bi-trash"></i></div>`;
+      <div class="cantidad"><input type="number" name="number" id="cantidad-${id}" min="1" max="${producto.stock}" step="1" value="${cantidad}" /></div>
+      <div class="precio" id="subTotal-${id}">$ ${subTotal.toLocaleString()}</div>
+      <div class="eliminar" id="eliminar-${id}"><i class="bi bi-trash"></i></div>`;
       itemsCarrito.appendChild(itemCarrito);
-      const inputCantidad = document.getElementById(`cantidad-${item.id}`);
-      const subTotal = document.getElementById(`subTotal-${item.id}`);
+      const inputCantidad = document.getElementById(`cantidad-${id}`);
+      const divSubTotal = document.getElementById(`subTotal-${id}`);
       inputCantidad.onchange = (e) => {
         /* agrego esta validacion para que no se ingresen cantidades menores que 1 o mayores que el stock  */
         let cantidad = parseInt(e.target.value);
@@ -240,18 +250,16 @@ function escribirItemsCarrito(carrito) {
 
         /* el input por más que sea numero se transforma en string, así que lo tengo que convertir a numero
         para eso uso un parseint */
-        carrito.setearCantidad(item.id, parseInt(cantidad));
-        subTotal.innerText = `$ ${carrito.subtotalItem(item.id).toLocaleString()}`;
+        carrito.setearCantidad(id, parseInt(cantidad));
+        divSubTotal.innerText = `$ ${carrito.subtotalItem(id).toLocaleString()}`;
         /* si el stock es igual a lo que esta en carrito deshabilito el boton agregar de ese producto */
-        cantidadCarrito = carrito.cantidadItem(item.id);
+        cantidadCarrito = carrito.cantidadItem(id);
         /* cuando cambio la cantidad en el carrito, tmb cambia en la pagina inicial  */
         document.getElementById(`stock-${producto.id}`).innerText = `Stock: ${producto.stock} - ${cantidadCarrito} en carrito`;
         /* cuando igualo la cantidad ordenada a la cantidad en stock, boton de agregar de la pag ppal se deshabilita */
-        if (cantidadCarrito === producto.stock) {
-          document.getElementById(`agregar-${producto.id}`).disabled = true;
-        } else {
-          document.getElementById(`agregar-${producto.id}`).disabled = false;
-        }
+        /* #OPTIMIZACION tenia un if y un else con una sola instruccion
+        voy a reemplazarlo por un operador ternario */
+        cantidadCarrito === producto.stock ? (document.getElementById(`agregar-${producto.id}`).disabled = true) : (document.getElementById(`agregar-${producto.id}`).disabled = false);
         /* actualizo la cantidad de items de carrito */
         actualizarContadorCarrito();
         /* actualizo el local storage */
@@ -259,9 +267,9 @@ function escribirItemsCarrito(carrito) {
         /* actualizo el total */
         actualizarTotal();
       };
-      const btnEliminarItem = document.getElementById(`eliminar-${item.id}`);
+      const btnEliminarItem = document.getElementById(`eliminar-${id}`);
       btnEliminarItem.onclick = () => {
-        eliminarProducto(item.id);
+        eliminarProducto(id);
       };
     });
     /* ademas de esto tengo que agregar le subtotal */
@@ -304,7 +312,13 @@ function agregarProducto(idProducto) {
   actualizarContadorCarrito();
   /* no cambia la vista borre esta linea */
   /* muestro modal anunciando que agregue un producto */
-  mostrarModal("Producto agregado", `${producto.nombre} agregado a carrito`);
+  /* Agrego toastify */ 
+  Toastify({text:`${producto.nombre} agregado a carrito`, duration: 1000
+  ,style: {
+    background: "linear-gradient(to right, #666666, #666666)",
+  },
+}).showToast();
+  // mostrarModal("Producto agregado", `${producto.nombre} agregado a carrito`);
   /* obtengo la cantidad del carrito */
   const cantidadCarrito = miCarrito.cantidadItem(idProducto);
   /* donde aparece el stock pongo la cantidad ordenada */
@@ -352,7 +366,6 @@ function actualizarContadorCarrito() {
 document.addEventListener("DOMContentLoaded", inicializar());
 let miCarrito = new Carrito();
 const carritoEnLocalStorage = JSON.parse(localStorage.getItem("carrito"));
-console.log(carritoEnLocalStorage);
 miCarrito.cargar(carritoEnLocalStorage);
 escribirItemsCarrito(miCarrito);
 actualizarContadorCarrito();
