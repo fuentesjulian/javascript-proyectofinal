@@ -1,0 +1,8 @@
+[
+  { "id": "PR5", "nombre": "Procesador Ryzen 5", "precio": 36000, "stock": 5, "descripcion": "Procesador Ryzen 5 3900x", "imagen": "ryzen5.png" },
+  { "id": "PR7", "nombre": "Procesador Ryzen 7", "precio": 65000, "stock": 2, "descripcion": "Procesador Ryzen 7 5800x", "imagen": "ryzen7.png" },
+  { "id": "PI5", "nombre": "Procesador Intel I5", "precio": 37000, "stock": 4, "descripcion": "Procesador Intel i5 10ma generacion", "imagen": "i5.png" },
+  { "id": "PI7", "nombre": "Procesador Intel I7", "precio": 67000, "stock": 4, "descripcion": "Procesador Intel i7 10ma generacion", "imagen": "i7.png" },
+  { "id": "MOA", "nombre": "Motherboard Asus", "precio": 45000, "stock": 2, "descripcion": "Motherboard Asus Gamer Z590-e", "imagen": "asus.png" },
+  { "id": "MOG", "nombre": "Motherboard Gigabyte", "precio": 25000, "stock": 2, "descripcion": "Mothherboard Gigabyte Z690", "imagen": "gigabyte.png" }
+]

@@ -1,12 +1,12 @@
 /* para simplificar el código puse sólo un array de productos sin la master data */
 let productos = [];
-productos[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 5, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
+/* productos[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 5, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
 productos[1] = { id: "PR7", nombre: "Procesador Ryzen 7", precio: 65000, stock: 2, descripcion: "Procesador Ryzen 7 5800x", imagen: "ryzen7.png" };
 productos[2] = { id: "PI5", nombre: "Procesador Intel I5", precio: 37000, stock: 4, descripcion: "Procesador Intel i5 10ma generacion", imagen: "i5.png" };
 productos[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 67000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.png" };
 productos[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.png" };
 productos[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.png" };
-
+*/
 
 /* es un numero de factura que va subiendo a medida que voy facturando */
 let numeroFact = 0;
@@ -57,13 +57,13 @@ class ItemCarrito {
 }
 /* #OPTIMIZACION creo una funcion de orden superior para hacer cualquier suma de una propiedad de un array de objetos */
 /* utilizo rest para esto */
-function sumarCampo(campo){
-  return function (...array){
+function sumarCampo(campo) {
+  return function (...array) {
     return array.reduce((acumulador, array) => acumulador + array[campo], 0);
-  }
+  };
 }
 /* #OPTIMIZACION creo una funcion para sumar subtotales */
-let sumarSubTotal = sumarCampo("subTotal")
+let sumarSubTotal = sumarCampo("subTotal");
 
 /* Creo una clase que se llama carrito, cada uno de mis items es un ItemCarrito */
 class Carrito {
@@ -312,12 +312,14 @@ function agregarProducto(idProducto) {
   actualizarContadorCarrito();
   /* no cambia la vista borre esta linea */
   /* muestro modal anunciando que agregue un producto */
-  /* Agrego toastify */ 
-  Toastify({text:`${producto.nombre} agregado a carrito`, duration: 1000
-  ,style: {
-    background: "linear-gradient(to right, #666666, #666666)",
-  },
-}).showToast();
+  /* Agrego toastify */
+  Toastify({
+    text: `${producto.nombre} agregado a carrito`,
+    duration: 1000,
+    style: {
+      background: "linear-gradient(to right, #666666, #666666)",
+    },
+  }).showToast();
   // mostrarModal("Producto agregado", `${producto.nombre} agregado a carrito`);
   /* obtengo la cantidad del carrito */
   const cantidadCarrito = miCarrito.cantidadItem(idProducto);
@@ -367,9 +369,6 @@ document.addEventListener("DOMContentLoaded", inicializar());
 let miCarrito = new Carrito();
 const carritoEnLocalStorage = JSON.parse(localStorage.getItem("carrito"));
 miCarrito.cargar(carritoEnLocalStorage);
-escribirItemsCarrito(miCarrito);
-actualizarContadorCarrito();
-actualizarVista();
 
 /* esta funcion se corre al inicio dsps de haber cargado miCarrito */
 function actualizarVista() {
@@ -385,7 +384,15 @@ function actualizarVista() {
 
 function inicializar() {
   /* cargo productos */
-  cargarProductos();
+  fetch("/data/data.json")
+    .then((response) => response.json())
+    .then((data) => {
+      productos = data;
+      cargarProductos();
+      escribirItemsCarrito(miCarrito);
+      actualizarContadorCarrito();
+      actualizarVista();
+    });
 }
 
 /* INSTRUCCIONES PARA EL MODAL QUE MENSAJEA QUE SE AGREGO UN PRODUCTO */
