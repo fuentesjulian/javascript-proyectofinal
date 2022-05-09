@@ -384,7 +384,7 @@ function actualizarVista() {
 
 function inicializar() {
   /* cargo productos */
-  fetch("/data/data.json")
+  fetch("data/data.json")
     .then((response) => response.json())
     .then((data) => {
       productos = data;
