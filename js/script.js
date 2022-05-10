@@ -1,12 +1,6 @@
 /* para simplificar el código puse sólo un array de productos sin la master data */
 let productos = [];
-/* productos[0] = { id: "PR5", nombre: "Procesador Ryzen 5", precio: 35000, stock: 5, descripcion: "Procesador Ryzen 5 3900x", imagen: "ryzen5.png" };
-productos[1] = { id: "PR7", nombre: "Procesador Ryzen 7", precio: 65000, stock: 2, descripcion: "Procesador Ryzen 7 5800x", imagen: "ryzen7.png" };
-productos[2] = { id: "PI5", nombre: "Procesador Intel I5", precio: 37000, stock: 4, descripcion: "Procesador Intel i5 10ma generacion", imagen: "i5.png" };
-productos[3] = { id: "PI7", nombre: "Procesador Intel I7", precio: 67000, stock: 4, descripcion: "Procesador Intel i7 10ma generacion", imagen: "i7.png" };
-productos[4] = { id: "MOA", nombre: "Motherboard Asus", precio: 45000, stock: 2, descripcion: "Motherboard Asus Gamer Z590-e", imagen: "asus.png" };
-productos[5] = { id: "MOG", nombre: "Motherboard Gigabyte", precio: 25000, stock: 2, descripcion: "Mothherboard Gigabyte Z690", imagen: "gigabyte.png" };
-*/
+/* elimino el array de productos porque lo trae con un fetch */
 
 /* es un numero de factura que va subiendo a medida que voy facturando */
 let numeroFact = 0;
@@ -172,7 +166,7 @@ function ajustarStocks() {
 
 const btnLimpiarCarrito = document.getElementById("btnLimpiarCarrito");
 btnLimpiarCarrito.onclick = () => {
-  limpiarCarrito();
+  mostrarModal("Confirmar", "Esta seguro que desea eliminar carrito?");
 };
 
 const btnCheckout = document.getElementById("btnCheckout");
@@ -395,34 +389,40 @@ function inicializar() {
     });
 }
 
-/* INSTRUCCIONES PARA EL MODAL QUE MENSAJEA QUE SE AGREGO UN PRODUCTO */
-/* creo el innerHTML del modal que se va a mostrar cada vez que agrego producto a carrito */
+/* REFACTORING ... reutilice el modal de alerta para crear un modal de confirmacion yes/no para eliminar el carrito */
+/* creo el innerHTML del modal que se va a mostrar cada vez que quiero vaciar el carrito */
 const divModal = document.getElementById("divModal");
-divModal.innerHTML = `<div class="modal fade" tabindex="-1" id="modalAgregar">
+divModal.innerHTML = `<div class="modal fade" tabindex="-1" id="modalBorrarCarrito">
 <div class="modal-dialog modal-sm">
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title" id="tituloModal"></h5>
     </div>
     <div class="modal-body" id="textoModal"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      <button type="button" class="btn btn-danger" id="borrarCarrito">Borrar</button>
+    </div>
   </div>
 </div>
 </div>`;
 /* tomo el id del modal para poder darle instrucciones para mostrar / ocultar */
-const modalAgregar = document.getElementById("modalAgregar");
+const modalBorrarCarrito = document.getElementById("modalBorrarCarrito");
 const tituloModal = document.getElementById("tituloModal");
 const textoModal = document.getElementById("textoModal");
 /* busque como hacer para ocultar el modal dsps de cierto tiempo, el timeout son milisegundos */
 /* el toggle lo saque de bootstrap directamente */
-const bsModalAgregar = new bootstrap.Modal(modalAgregar, {});
-modalAgregar.addEventListener("show.bs.modal", () => {
-  setTimeout(function () {
-    bsModalAgregar.toggle();
-  }, 1000);
-});
+const bsModalBorrarCarrito = new bootstrap.Modal(modalBorrarCarrito, {});
+/* tengo que hacer click al boton borrar dentro del modal de confirmacion de 
+eliminacion de carrito para q se vacie el carrito */
+const borrarCarrito = document.getElementById("borrarCarrito");
+borrarCarrito.onclick = () => {
+  limpiarCarrito();
+  bsModalBorrarCarrito.toggle();
+};
 /* puedo configurar el modal para que tome el nombre del producto que agrego */
 function mostrarModal(titulo, texto) {
   tituloModal.innerText = titulo;
   textoModal.innerText = texto;
-  bsModalAgregar.toggle();
+  bsModalBorrarCarrito.toggle();
 }
