@@ -131,3 +131,51 @@ nav a {
 #modalAgregar .modal-dialog {
   top: 10em;
 }
+
+#checkOut{
+  max-width: 50em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#checkOut .list-group .list-group-item .imagen {
+  grid-area: imagenCheckOut;
+}
+#checkOut .list-group .list-group-item .texto {
+  font-size: small;
+  grid-area: textoCheckOut;
+  margin: 0.5em;
+}
+
+#checkOut .list-group .list-group-item .texto .total {
+  font-weight: bold;
+  font-size: large;
+  margin: 0.5em;
+}
+
+#checkOut .list-group .list-group-item .cantidad {
+  font-weight: bold;
+  grid-area: cantidadCheckOut;
+  margin: 0.5em;
+}
+#checkOut .list-group .list-group-item .precio {
+  
+  font-weight: bold;
+  grid-area: precioCheckOut;
+  margin: 0.5em;
+}
+
+#checkOut .list-group .list-group-item {
+  display: grid;
+  grid-template-columns: 30% 35% 15% 20%;
+  align-items: center;
+  grid-template-areas: "imagenCheckOut textoCheckOut cantidadCheckOut precioCheckOut";
+}
+
+#checkOut .list-group .list-group-item .imagen img {
+  max-width: 8em;
+}
+
+#checkOut .list-group .list-group-item .texto .nombre {
+  font-weight: bold;
+}
