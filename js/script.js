@@ -231,7 +231,11 @@ function escribirItemsCarrito(carrito) {
       const divSubTotal = document.getElementById(`subTotal-${id}`);
       inputCantidad.onchange = (e) => {
         /* agrego esta validacion para que no se ingresen cantidades menores que 1 o mayores que el stock  */
+        if (isNaN(parseInt(e.target.value))) {
+          e.target.value = 1;
+        }
         let cantidad = parseInt(e.target.value);
+
         if (cantidad < 1) {
           cantidad = 1;
           Toastify({
