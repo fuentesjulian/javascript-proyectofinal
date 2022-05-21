@@ -234,11 +234,29 @@ function escribirItemsCarrito(carrito) {
         let cantidad = parseInt(e.target.value);
         if (cantidad < 1) {
           cantidad = 1;
-          mostrarModal("Error", "Cantidad minima: 1");
+          Toastify({
+            text: "ERROR - Cantidad mínima 1 unidad",
+            duration: 2000,
+            gravity: "center",
+            position: "center",
+            style: {
+              background: "rgb(179, 179, 179)",
+              color: "white",
+            },
+          }).showToast();
         }
         if (cantidad > producto.stock) {
           cantidad = producto.stock;
-          mostrarModal("Error", `Cantidad máxima: ${producto.stock}`);
+          Toastify({
+            text: `ERROR - Cantidad máxima ${producto.stock} unidad(es)`,
+            duration: 2000,
+            gravity: "center",
+            position: "center",
+            style: {
+              background: "rgb(179, 179, 179)",
+              color: "white",
+            },
+          }).showToast();
         }
         e.target.value = cantidad;
 
